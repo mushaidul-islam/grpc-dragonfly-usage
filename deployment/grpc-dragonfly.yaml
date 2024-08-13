@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-server
+  template:
+    metadata:
+      labels:
+        app: grpc-server
+    spec:
+      containers:
+      - name: grpc-server
+        image: grpc-dragonfly-usage:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_ADDR
+          value: "dragonflydb-service:6379"
+        - name: SERVER_PORT_ADDR
+          value: "50051"
+        ports:
+        - containerPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-service
+spec:
+  selector:
+    app: grpc-server
+  ports:
+  - protocol: TCP
+    port: 50051
+    targetPort: 50051
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dragonflydb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dragonflydb
+  template:
+    metadata:
+      labels:
+        app: dragonflydb
+    spec:
+      containers:
+      - name: dragonflydb
+        image: chainguard/dragonfly:latest
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dragonflydb-service
+spec:
+  selector:
+    app: dragonflydb
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379

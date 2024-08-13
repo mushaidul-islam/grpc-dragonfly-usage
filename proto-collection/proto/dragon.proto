@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package dragon;
+
+
+option go_package = "/dragonService";
+
+
+
+service DragonService {
+    rpc SetValue(SetValueRequest) returns (SetValueResponse);
+    rpc GetValue(GetValueRequest) returns (GetValueResponse);
+    rpc LoadTestCall(LoadTestRequest) returns (LoadTestResponse);
+}
+
+message SetValueRequest {
+    string key = 1;
+    string value = 2;
+}
+
+
+message SetValueResponse {
+  string message = 3;
+}
+
+message GetValueRequest {
+    string key = 1;
+}
+
+message GetValueResponse {
+    string value = 1;
+}
+
+message LoadTestRequest {
+   int64 no_of_routines = 1;
+}
+
+message LoadTestResponse {
+    string message = 1;
+}
